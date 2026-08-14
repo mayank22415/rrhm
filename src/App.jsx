@@ -208,7 +208,7 @@ export default function App() {
             onOpenModal={() => setIsAddModalOpen(true)}
           />
 
-          {/* Landing Hero with Voice-Density Interactive Map */}
+          {/* Landing Hero with Voice-Density Interactive Map & Center Ashoka Chakra */}
           <LandingHero
             voiceCount={voiceCount}
             targetCount={TARGET_VOICES}
@@ -216,6 +216,7 @@ export default function App() {
             isUnlocked={phase === PHASE.WEBSITE}
             statesData={statesData}
             onStateClicked={(stName) => setSelectedState(stName)}
+            onTriggerCinematic={() => setPhase(PHASE.CINEMATIC)}
           />
 
           {/* Vision Section */}
