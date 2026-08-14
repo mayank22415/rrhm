@@ -191,16 +191,6 @@ export default function LandingHero({
                 <Flame className="w-5 h-5 text-white animate-pulse" />
                 <span>ADD MY VOICE & LIGHT UP NODE</span>
               </button>
-
-              {/* Instant 2,026 Unlock Test Trigger */}
-              <button
-                onClick={onTriggerCinematic}
-                className="px-5 py-4 rounded-xl border-2 border-amber-500/80 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer shadow-xs"
-                title="Preview the 2026 unlock sequence with Ashoka Chakra"
-              >
-                <Sparkles className="w-4 h-4 text-amber-600 animate-spin-slow" />
-                <span>{isComplete ? 'OPEN ASHOKA CHAKRA UNLOCK' : 'PREVIEW 2026 UNLOCK'}</span>
-              </button>
             </div>
 
             {/* Micro Badges */}
