@@ -113,35 +113,61 @@ export default function App() {
       incrementReferralCount(ref);
     }
 
-    // 1. Restore local storage users
-    const savedUsers = getStoredUsers();
-    if (savedUsers && savedUsers.length > 0) {
-      setVoicesList(prev => {
-        const unique = savedUsers.filter(su => !prev.some(pv => pv.id === su.id));
-        return [...unique, ...prev];
-      });
-      setVoiceCount(prev => prev + savedUsers.length);
-
-      setStatesData(prev => {
-        const countMap = {};
-        savedUsers.forEach(u => {
-          if (u.state) countMap[u.state] = (countMap[u.state] || 0) + 1;
-        });
-        return prev.map(st =>
-          countMap[st.name]
-            ? { ...st, voices: (st.voices || 0) + countMap[st.name] }
-            : st
-        );
-      });
-    }
-
-    // 2. If Supabase configured, load remote cloud voices
+    // 2. If Supabase configured, load remote cloud voices as the TRUE source of count
     if (isSupabaseConfigured) {
       fetchRemoteVoices().then(remoteVoices => {
         if (remoteVoices && remoteVoices.length > 0) {
-          remoteVoices.forEach(rv => ingestNewVoice(rv, false));
+          // Set count = seed data + real Supabase submissions (avoids double-count)
+          setVoiceCount(TOTAL_INITIAL_VOICES + remoteVoices.length);
+
+          // Update state voice breakdown
+          const countMap = {};
+          remoteVoices.forEach(rv => {
+            if (rv.state) countMap[rv.state] = (countMap[rv.state] || 0) + 1;
+          });
+          setStatesData(prev =>
+            prev.map(st =>
+              countMap[st.name]
+                ? { ...st, voices: (st.voices || 0) + countMap[st.name] }
+                : st
+            )
+          );
+
+          // Add to voices list for display (deduplicated)
+          setVoicesList(prev => {
+            const existingIds = new Set(prev.map(v => v.id));
+            const newOnes = remoteVoices
+              .filter(rv => !existingIds.has(rv.id))
+              .map(rv => ({
+                id: rv.id,
+                voiceNo: `Voice #${rv.id}`,
+                name: rv.name,
+                state: rv.state,
+                city: rv.city || rv.state,
+                profession: rv.profession,
+                contact: rv.contact,
+                quote: rv.quote,
+                timeAgo: 'Earlier',
+                verified: true,
+                date: new Date(rv.created_at).toLocaleDateString('en-IN', {
+                  year: 'numeric', month: 'short', day: 'numeric',
+                }),
+              }));
+            return [...newOnes, ...prev];
+          });
         }
+        // If Supabase returns 0 rows, keep the seed count of 103
       });
+    } else {
+      // No Supabase: restore from localStorage for offline/dev mode only
+      const savedUsers = getStoredUsers();
+      if (savedUsers && savedUsers.length > 0) {
+        setVoicesList(prev => {
+          const unique = savedUsers.filter(su => !prev.some(pv => pv.id === su.id));
+          return [...unique, ...prev];
+        });
+        setVoiceCount(TOTAL_INITIAL_VOICES + savedUsers.length);
+      }
     }
 
     // 3. Realtime multi-user & multi-tab subscription listener
