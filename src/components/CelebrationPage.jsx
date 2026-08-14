@@ -138,20 +138,23 @@ export default function CelebrationPage({ voiceCount, statesData = [], onEnterWe
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md">
-          <button
-            onClick={onEnterWebsite}
-            className="group relative w-full sm:flex-1 py-4 px-8 rounded-xl font-black text-white flex items-center justify-center gap-2 overflow-hidden transition-transform duration-200 hover:scale-[1.02]"
+          <a
+            href="https://rrmi.co.in"
+            onClick={(e) => {
+              if (onEnterWebsite) onEnterWebsite();
+            }}
+            className="group relative w-full sm:flex-1 py-4 px-8 rounded-xl font-black text-white flex items-center justify-center gap-2 overflow-hidden transition-transform duration-200 hover:scale-[1.02] text-decoration-none cursor-pointer"
             style={{
               background: 'linear-gradient(135deg, #dc2626 0%, #f97316 100%)',
               boxShadow: '0 0 40px rgba(220,38,38,0.35), 0 6px 20px rgba(0,0,0,0.5)',
             }}
           >
             <Globe className="w-5 h-5 flex-shrink-0" />
-            ENTER THE WEBSITE
+            <span>ENTER THE WEBSITE</span>
             <ArrowRight className="w-4 h-4 flex-shrink-0" />
             <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
               style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)' }} />
-          </button>
+          </a>
 
           <button
             onClick={handleShare}
