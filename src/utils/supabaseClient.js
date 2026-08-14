@@ -25,14 +25,38 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+// Public/publishable keys — safe to include in frontend code
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://lszvdpncbyxrsuhqqpmg.supabase.co';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+// Only treat as configured if both URL and a valid JWT anon key are present
+export const isSupabaseConfigured = Boolean(
+  SUPABASE_URL &&
+  SUPABASE_ANON_KEY &&
+  SUPABASE_ANON_KEY.startsWith('eyJ')
+);
 
 export const supabase = isSupabaseConfigured
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
+
+/**
+ * Track contacts that were submitted from THIS browser tab so the
+ * realtime subscription can skip their echo and avoid double-counting.
+ */
+const _pendingContacts = new Set();
+
+export function markVoiceAsPending(contact) {
+  if (contact) {
+    _pendingContacts.add(contact.trim().toLowerCase());
+    // Auto-clear after 15 s (plenty of time for the realtime echo)
+    setTimeout(() => _pendingContacts.delete(contact.trim().toLowerCase()), 15000);
+  }
+}
+
+export function isVoicePending(contact) {
+  return contact ? _pendingContacts.has(contact.trim().toLowerCase()) : false;
+}
 
 // Multi-Tab / Local Realtime Broadcast Channel (works instantly in browser even without cloud keys)
 let broadcastChannel = null;
@@ -72,6 +96,10 @@ export async function fetchRemoteVoices() {
  * Insert a new verified voice to Supabase and broadcast to all connected tabs
  */
 export async function submitVoiceRealtime(voiceData) {
+  // Mark this contact as pending BEFORE broadcasting/inserting so the
+  // realtime echo from Supabase or BroadcastChannel is skipped.
+  markVoiceAsPending(voiceData.contact);
+
   // Broadcast locally to any open tabs/windows immediately
   if (broadcastChannel) {
     try {
@@ -100,6 +128,7 @@ export async function submitVoiceRealtime(voiceData) {
 
       if (error) {
         console.error('Supabase insert error:', error.message);
+        return null;
       }
       return data;
     } catch (err) {
@@ -115,10 +144,14 @@ export async function submitVoiceRealtime(voiceData) {
  */
 export function subscribeToRealtimeVoices(onNewVoice) {
   // 1. Listen to Local BroadcastChannel for instant multi-tab sync
+  //    Skip the message if it came from THIS tab (already counted via handleVoiceSubmitted)
   if (broadcastChannel) {
     const handleBroadcast = (event) => {
       if (event.data && event.data.type === 'NEW_VOICE' && event.data.payload) {
-        onNewVoice(event.data.payload);
+        const payload = event.data.payload;
+        // BroadcastChannel does NOT fire for the sender tab in Chrome, so this
+        // handler only runs in OTHER tabs — no dedup needed here.
+        onNewVoice(payload);
       }
     };
     broadcastChannel.addEventListener('message', handleBroadcast);
@@ -135,6 +168,10 @@ export function subscribeToRealtimeVoices(onNewVoice) {
           { event: 'INSERT', schema: 'public', table: 'rrmi_voices' },
           (payload) => {
             if (payload.new) {
+              // Skip the echo for voices submitted by THIS tab
+              if (isVoicePending(payload.new.contact)) {
+                return;
+              }
               const remoteVoice = {
                 id: payload.new.id,
                 voiceNo: `Voice #${payload.new.id}`,

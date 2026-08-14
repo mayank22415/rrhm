@@ -78,32 +78,41 @@ export default function App() {
 
   // Helper to incorporate an incoming new voice
   const ingestNewVoice = useCallback((newVoice, isSelf = false) => {
+    // Use a ref-like approach: track whether this voice was truly new
+    // by checking inside setVoicesList and only updating count if new.
+    let isNew = false;
+
     setVoicesList(prev => {
-      // Prevent duplicate insertions
+      // Prevent duplicate insertions (same id OR same contact)
       if (prev.some(v => v.id === newVoice.id || (v.contact && v.contact === newVoice.contact))) {
         return prev;
       }
+      isNew = true;
       return [newVoice, ...prev];
     });
 
-    setVoiceCount(prev => {
-      const nextCount = prev + 1;
-      return nextCount;
-    });
+    // Only increment count and state tally if it was a genuinely new voice
+    // NOTE: Because React batches state updates, we use a setTimeout(0) trick
+    // to read isNew AFTER setVoicesList's setter has evaluated synchronously.
+    setTimeout(() => {
+      if (!isNew) return;
 
-    if (newVoice.state) {
-      setStatesData(prev =>
-        prev.map(st =>
-          st.name.toLowerCase() === newVoice.state.toLowerCase()
-            ? { ...st, voices: (st.voices || 0) + 1 }
-            : st
-        )
-      );
-    }
+      setVoiceCount(prev => prev + 1);
 
-    if (isSelf) {
-      setActiveBadgeVoice(newVoice);
-    }
+      if (newVoice.state) {
+        setStatesData(prev =>
+          prev.map(st =>
+            st.name.toLowerCase() === newVoice.state.toLowerCase()
+              ? { ...st, voices: (st.voices || 0) + 1 }
+              : st
+          )
+        );
+      }
+
+      if (isSelf) {
+        setActiveBadgeVoice(newVoice);
+      }
+    }, 0);
   }, []);
 
   // On load: restore local users, handle referrals, fetch remote voices & subscribe to realtime
