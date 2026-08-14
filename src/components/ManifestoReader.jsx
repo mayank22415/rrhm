@@ -133,26 +133,7 @@ export default function ManifestoReader() {
           ))}
         </div>
 
-        {/* ── DOWNLOAD INTERNAL FRAMEWORK BANNER — exact match ── */}
-        <div className="rounded-2xl bg-gray-950 text-white p-7 sm:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-gray-800 shadow-xl">
-          <div className="space-y-2 max-w-2xl">
-            <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-              Download Internal Framework
-            </h3>
-            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
-              Dive deep into the research, legal policies, and economic pipelines
-              underpinning the officially launched RRMI Manifesto structure.
-            </p>
-          </div>
 
-          {/* Flat solid red button — exact match */}
-          <button
-            onClick={exportManifestoToPDF}
-            className="flex-shrink-0 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wider text-sm px-8 py-4 rounded-xl transition-colors duration-200 cursor-pointer shadow-lg shadow-red-600/30 hover:scale-[1.02] active:scale-[0.98]"
-          >
-            DOWNLOAD MANIFESTO
-          </button>
-        </div>
 
       </div>
     </section>
