@@ -26,6 +26,7 @@ import {
   fetchRemoteVoices,
   isSupabaseConfigured,
 } from './utils/supabaseClient';
+import { fetchGlobalCount, incrementGlobalCount } from './utils/counterApi';
 
 const PHASE = {
   CAMPAIGN:    'campaign',
@@ -122,6 +123,13 @@ export default function App() {
       incrementReferralCount(ref);
     }
 
+    // 1. Fetch the globally-shared live count from the counter API (works across all users)
+    fetchGlobalCount().then(globalCount => {
+      if (globalCount !== null && globalCount > TOTAL_INITIAL_VOICES) {
+        setVoiceCount(globalCount);
+      }
+    });
+
     // 2. If Supabase configured, load remote cloud voices as the TRUE source of count
     if (isSupabaseConfigured) {
       fetchRemoteVoices().then(remoteVoices => {
@@ -203,7 +211,15 @@ export default function App() {
   const handleVoiceSubmitted = (newVoice) => {
     setIsAddModalOpen(false);
     setMapBloomTrigger({ state: newVoice.state, name: newVoice.name, timestamp: Date.now() });
+    // Immediately show +1 in the UI
     ingestNewVoice({ ...newVoice, voiceCount: voiceCount + 1 }, true);
+    // Also increment the global counter so ALL users see the updated count
+    incrementGlobalCount().then(serverCount => {
+      if (serverCount !== null) {
+        // Sync to the server-confirmed count (prevents drift)
+        setVoiceCount(serverCount);
+      }
+    });
   };
 
   const handleCinematicComplete = () => {

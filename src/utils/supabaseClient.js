@@ -27,7 +27,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // Public/publishable keys — safe to include in frontend code
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://lszvdpncbyxrsuhqqpmg.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzenZkcG5jYnl4cnN1aHFxcG1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2OTY5NzEsImV4cCI6MjEwMjI3Mjk3MX0._t8RhtCOFaBDXCSmtrT1fvF3vsPp2a32uBI6DZcs9-0';
 
 // Only treat as configured if both URL and a valid JWT anon key are present
 export const isSupabaseConfigured = Boolean(
