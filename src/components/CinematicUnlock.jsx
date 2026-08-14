@@ -7,7 +7,7 @@ const SPOKES = Array.from({ length: 24 }, (_, i) => i * 15);
 const PHASES = [
   { id: 0, label: 'counter',    duration: 2800  }, // 2026/2026 COMPLETE counter display
   { id: 1, label: 'blackout',   duration: 1600  }, // everything goes pure dark
-  { id: 2, label: 'mashaal',    duration: 3000  }, // Burning Mashaal (Torch Flame) ignites
+  { id: 2, label: 'aura',       duration: 2600  }, // Ambient energy halo ignites
   { id: 3, label: 'chakra',     duration: 3200  }, // Ashoka Chakra appears & rotates
   { id: 4, label: 'text',       duration: 4800  }, // 2,026 Citizens Have Spoken text reveal
   { id: 5, label: 'accelerate', duration: 2400  }, // Chakra accelerates into warp speed
@@ -56,12 +56,12 @@ export default function CinematicUnlock({ onComplete }) {
     return () => timers.forEach(clearTimeout);
   }, [phase]);
 
-  // Confetti burst when Mashaal ignites & Chakra spins
+  // Confetti burst when Chakra spins
   useEffect(() => {
     if (phase === 2 && !confettiFiredRef.current) {
       confettiFiredRef.current = true;
       setTimeout(() => {
-        const colors = ['#f59e0b', '#dc2626', '#ffffff', '#16a34a', '#f97316'];
+        const colors = ['#f59e0b', '#dc2626', '#ffffff', '#16a34a', '#3b82f6'];
         confetti({ particleCount: 140, spread: 360, startVelocity: 35, origin: { x: 0.5, y: 0.45 }, colors });
         setTimeout(() => confetti({ particleCount: 90, spread: 360, origin: { x: 0.3, y: 0.4 }, colors }), 500);
         setTimeout(() => confetti({ particleCount: 90, spread: 360, origin: { x: 0.7, y: 0.4 }, colors }), 900);
@@ -131,7 +131,7 @@ export default function CinematicUnlock({ onComplete }) {
         />
       )}
 
-      {/* ═══ PHASE 2+: Dark Background + Burning Mashaal + Ashoka Chakra ═══ */}
+      {/* ═══ PHASE 2+: Dark Background + Majestic Ashoka Chakra ═══ */}
       {phase >= 2 && (
         <div
           className="absolute inset-0 flex flex-col items-center justify-center"
@@ -141,51 +141,39 @@ export default function CinematicUnlock({ onComplete }) {
             transition: contentFadeOut ? 'opacity 2s ease-in' : '',
           }}
         >
-          {/* Ambient Fire Aura Glow (Saffron / Gold / Red Fire Glow) */}
+          {/* Ambient Energy Glow Halo (Golden Saffron & Royal Navy) */}
           <div
             className="absolute pointer-events-none rounded-full"
             style={{
-              width: '600px',
-              height: '600px',
-              background: 'radial-gradient(circle, rgba(234,88,12,0.35) 0%, rgba(220,38,38,0.2) 40%, transparent 70%)',
-              filter: 'blur(70px)',
+              width: '650px',
+              height: '650px',
+              background: 'radial-gradient(circle, rgba(245,158,11,0.22) 0%, rgba(29,78,216,0.18) 45%, transparent 70%)',
+              filter: 'blur(80px)',
               animation: 'pulseGlow 2.5s ease-in-out infinite alternate',
             }}
           />
 
-          {/* Tricolor Ambient Energy Halo */}
-          <div
-            className="absolute pointer-events-none rounded-full"
-            style={{
-              width: '450px',
-              height: '450px',
-              background: 'radial-gradient(circle, rgba(29,78,216,0.25) 0%, rgba(34,197,94,0.15) 50%, transparent 70%)',
-              filter: 'blur(60px)',
-            }}
-          />
-
-          {/* Central Composite: Burning Mashaal + Ashoka Chakra */}
+          {/* Central Ashoka Chakra */}
           <div className="relative flex flex-col items-center justify-center">
 
-            {/* ROTATING ASHOKA CHAKRA */}
             {chakraVisible && (
               <div
-                className="relative z-10 w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center select-none"
+                className="relative z-10 w-72 h-72 sm:w-96 sm:h-96 flex items-center justify-center select-none"
                 style={{
                   animation: phase >= 5
                     ? 'spinFast 0.6s linear infinite'
                     : 'spinSmooth 10s linear infinite',
-                  filter: 'drop-shadow(0 0 25px rgba(59,130,246,0.6))',
+                  filter: 'drop-shadow(0 0 35px rgba(59,130,246,0.75)) drop-shadow(0 0 60px rgba(245,158,11,0.4))',
                   transition: 'all 0.8s ease-out',
                 }}
               >
-                <svg viewBox="0 0 100 100" className="w-full h-full text-blue-500">
+                <svg viewBox="0 0 100 100" className="w-full h-full text-blue-400">
                   {/* Outer Rim */}
-                  <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="2.5" />
-                  <circle cx="50" cy="50" r="43" fill="none" stroke="currentColor" strokeWidth="0.8" strokeDasharray="1.5 1.5" />
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="2.8" />
+                  <circle cx="50" cy="50" r="43" fill="none" stroke="currentColor" strokeWidth="0.9" strokeDasharray="1.5 1.5" />
                   
-                  {/* Hub */}
-                  <circle cx="50" cy="50" r="9" fill="#000000" stroke="currentColor" strokeWidth="2.2" />
+                  {/* Inner Core */}
+                  <circle cx="50" cy="50" r="9" fill="#000000" stroke="currentColor" strokeWidth="2.4" />
                   <circle cx="50" cy="50" r="3.5" fill="currentColor" />
 
                   {/* 24 Exact Spokes */}
@@ -205,87 +193,11 @@ export default function CinematicUnlock({ onComplete }) {
               </div>
             )}
 
-            {/* BURNING MASHAAL (FLAMING TORCH / मशाल) */}
-            <div
-              className="relative z-20 flex flex-col items-center -mt-16 sm:-mt-20"
-              style={{
-                filter: 'drop-shadow(0 0 35px rgba(249,115,22,0.8))',
-              }}
-            >
-              {/* Flame SVG with Natural Multi-Layer Fire Flickering */}
-              <div className="relative w-28 h-36 sm:w-32 sm:h-44 flex items-center justify-center">
-                <svg viewBox="0 0 120 160" className="w-full h-full overflow-visible">
-                  {/* Outer Flame (Saffron / Deep Red) */}
-                  <path
-                    d="M 60 10 Q 85 45 90 75 Q 95 110 60 135 Q 25 110 30 75 Q 35 45 60 10 Z"
-                    fill="url(#outerFlameGradient)"
-                    style={{
-                      transformOrigin: 'bottom center',
-                      animation: 'flameFlicker 1.4s ease-in-out infinite alternate',
-                    }}
-                  />
-                  {/* Mid Flame (Bright Orange / Amber) */}
-                  <path
-                    d="M 60 30 Q 78 60 80 85 Q 82 110 60 125 Q 38 110 40 85 Q 42 60 60 30 Z"
-                    fill="url(#midFlameGradient)"
-                    style={{
-                      transformOrigin: 'bottom center',
-                      animation: 'flameFlicker 1s ease-in-out infinite alternate-reverse',
-                    }}
-                  />
-                  {/* Inner Core Flame (Pure Golden White) */}
-                  <path
-                    d="M 60 55 Q 70 75 70 95 Q 70 115 60 120 Q 50 115 50 95 Q 50 75 60 55 Z"
-                    fill="url(#innerCoreGradient)"
-                    style={{
-                      transformOrigin: 'bottom center',
-                      animation: 'flameFlicker 0.7s ease-in-out infinite alternate',
-                    }}
-                  />
-
-                  {/* Gradient Definitions */}
-                  <defs>
-                    <linearGradient id="outerFlameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#f59e0b" />
-                      <stop offset="40%" stopColor="#ea580c" />
-                      <stop offset="100%" stopColor="#dc2626" />
-                    </linearGradient>
-                    <linearGradient id="midFlameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#fde047" />
-                      <stop offset="60%" stopColor="#f97316" />
-                      <stop offset="100%" stopColor="#ea580c" />
-                    </linearGradient>
-                    <linearGradient id="innerCoreGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#ffffff" />
-                      <stop offset="60%" stopColor="#fef08a" />
-                      <stop offset="100%" stopColor="#f59e0b" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-
-                {/* Rising Fire Spark Particles */}
-                <span className="absolute -top-3 left-1/3 w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping opacity-75" />
-                <span className="absolute top-2 right-1/4 w-2 h-2 rounded-full bg-orange-400 animate-pulse opacity-90" />
-                <span className="absolute -top-6 left-1/2 w-1.5 h-1.5 rounded-full bg-yellow-200 animate-ping opacity-80" />
-              </div>
-
-              {/* Torch Handle / Mashaal Base (Brass / Traditional Indian Torch) */}
-              <div className="w-12 h-20 sm:w-14 sm:h-24 relative flex flex-col items-center">
-                {/* Torch Bowl Top */}
-                <div className="w-14 sm:w-16 h-4 bg-gradient-to-r from-amber-700 via-amber-500 to-amber-800 rounded-t-sm shadow-md border-t border-amber-300/40" />
-                {/* Torch Stem */}
-                <div className="w-6 sm:w-7 h-16 sm:h-20 bg-gradient-to-r from-amber-900 via-amber-700 to-stone-900 rounded-b-md shadow-inner border-x border-amber-600/30" />
-                {/* Grip Rings */}
-                <div className="absolute top-8 w-8 sm:w-9 h-1.5 bg-amber-400/80 rounded-full shadow-xs" />
-                <div className="absolute top-12 w-8 sm:w-9 h-1.5 bg-amber-400/80 rounded-full shadow-xs" />
-              </div>
-            </div>
-
           </div>
 
           {/* ═══ TYPOGRAPHY MANIFESTO REVEAL (Phase 4 & 5) ═══ */}
           {phase >= 4 && (
-            <div className="relative z-30 text-center px-4 max-w-2xl mx-auto space-y-3 mt-6">
+            <div className="relative z-30 text-center px-4 max-w-2xl mx-auto space-y-3 mt-8">
               
               {/* Line 1 */}
               <div
@@ -303,9 +215,9 @@ export default function CinematicUnlock({ onComplete }) {
               <div
                 className="font-black tracking-tight leading-tight uppercase"
                 style={{
-                  fontSize: 'clamp(1.75rem, 5vw, 3rem)',
+                  fontSize: 'clamp(1.75rem, 5vw, 3.2rem)',
                   color: '#ffffff',
-                  textShadow: '0 0 35px rgba(255,255,255,0.7), 0 0 70px rgba(249,115,22,0.4)',
+                  textShadow: '0 0 35px rgba(255,255,255,0.8), 0 0 70px rgba(59,130,246,0.5)',
                   opacity: textLines[1] ? 1 : 0,
                   transform: textLines[1] ? 'translateY(0)' : 'translateY(14px)',
                   transition: 'all 0.7s ease-out',
@@ -348,11 +260,6 @@ export default function CinematicUnlock({ onComplete }) {
         @keyframes spinFast {
           from { transform: rotate(0deg); }
           to   { transform: rotate(1080deg); }
-        }
-        @keyframes flameFlicker {
-          0%   { transform: scaleY(1) scaleX(1) rotate(-1deg); }
-          50%  { transform: scaleY(1.08) scaleX(0.95) rotate(1.5deg); }
-          100% { transform: scaleY(0.95) scaleX(1.04) rotate(-1.5deg); }
         }
       `}</style>
     </div>
