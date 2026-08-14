@@ -1,441 +1,249 @@
-import React, { useState } from 'react';
-import { Flame, ChevronDown, ShieldCheck, MapPin, Sparkles } from 'lucide-react';
-
-const SVG_W = 620;
-const SVG_H = 700;
-
-// Tricolor zone: North = Saffron/Red, Middle band = White, South = Green
-// This mirrors the Indian flag horizontally across the map
-function getStateZoneColor(nodeY) {
-  // North (top third) — Saffron / Red
-  if (nodeY <= 215) {
-    return {
-      hex: '#ff6b35',       // saffron-red
-      rgb: '255,107,53',
-      glowRgb: '220,38,38', // red glow
-      ring: '#dc2626',
-      label: '#991b1b',
-      badge: 'bg-red-600',
-      name: 'North',
-      coreBright: 'rgba(255,200,150,0.95)',
-    };
-  // Middle band — White / near-white
-  } else if (nodeY <= 370) {
-    return {
-      hex: '#f0f0f0',       // near white
-      rgb: '240,240,240',
-      glowRgb: '255,255,255', // white glow
-      ring: '#d1d5db',
-      label: '#374151',
-      badge: 'bg-gray-400',
-      name: 'Central',
-      coreBright: 'rgba(255,255,255,1)',
-    };
-  // South (bottom third) — Green
-  } else {
-    return {
-      hex: '#16a34a',       // green
-      rgb: '22,163,74',
-      glowRgb: '22,163,74',
-      ring: '#15803d',
-      label: '#14532d',
-      badge: 'bg-green-600',
-      name: 'South',
-      coreBright: 'rgba(150,255,180,0.95)',
-    };
-  }
-}
-
-// Convert voice count → intensity (0.0 to 1.0) using logarithmic scale
-function getVoiceIntensity(voices, maxVoices = 215) {
-  if (!voices || voices === 0) return 0;
-  return Math.min(1, Math.log(voices + 1) / Math.log(maxVoices + 1));
-}
+import React from 'react';
+import { Flame, ShieldCheck, Sparkles, Users, CheckCircle2 } from 'lucide-react';
 
 export default function LandingHero({
   voiceCount,
   targetCount = 2026,
   onOpenModal,
   isUnlocked,
-  statesData = [],
-  onStateClicked,
 }) {
-  const [hoveredState, setHoveredState] = useState(null);
-
-  const percentage = Math.min(100, (voiceCount / targetCount) * 100);
+  const percentage = Math.min(100, Math.round((voiceCount / targetCount) * 100));
   const remaining = Math.max(0, targetCount - voiceCount);
 
-  // Build a lookup map of stateId → voices from live statesData
-  const voiceMap = {};
-  statesData.forEach(st => { voiceMap[st.id] = st.voices || 0; });
+  // 24 spokes for Ashoka Chakra
+  const spokes = Array.from({ length: 24 }, (_, i) => i * 15);
 
-  // Max voices across all states for relative scaling
-  const maxVoices = Math.max(1, ...statesData.map(s => s.voices || 0));
+  // Circular progress math
+  const RADIUS = 46;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+  const strokeDashoffset = CIRCUMFERENCE - (CIRCUMFERENCE * percentage) / 100;
 
   return (
     <section
       id="hero"
-      className="relative min-h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden bg-white border-b border-gray-100"
+      className="relative min-h-[calc(100vh-4rem)] flex flex-col justify-center overflow-hidden bg-white border-b border-gray-100 py-12 lg:py-16"
     >
-      {/* Ambient background */}
+      {/* Subtle ambient tricolor background glows */}
       <div
-        className="absolute top-0 right-0 w-[550px] h-[550px] pointer-events-none rounded-full"
+        className="absolute top-0 right-1/4 w-[500px] h-[500px] pointer-events-none rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(254,226,226,0.3) 0%, transparent 70%)',
-          filter: 'blur(60px)',
+          background: 'radial-gradient(circle, rgba(254,215,170,0.25) 0%, transparent 70%)',
+          filter: 'blur(70px)',
+        }}
+      />
+      <div
+        className="absolute bottom-0 right-10 w-[450px] h-[450px] pointer-events-none rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(187,247,208,0.2) 0%, transparent 70%)',
+          filter: 'blur(70px)',
         }}
       />
 
-      {/* Main grid */}
-      <div className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex flex-col lg:grid lg:grid-cols-12 gap-8 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
 
-        {/* LEFT PANEL */}
-        <div className="lg:col-span-5 space-y-6 text-gray-900 order-2 lg:order-1">
+          {/* LEFT COLUMN: Movement Pitch & Action */}
+          <div className="lg:col-span-7 space-y-6 text-gray-900">
 
-          {/* Campaign badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-50 border border-red-200 text-red-700">
-            <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-            RESERVATION REFORM MOVEMENT INDIA
-          </div>
-
-          {/* Headline */}
-          <div className="space-y-1.5">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-gray-500">THE CAMPAIGN</p>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none text-gray-900">
-              <span className="block text-gray-900">THE NEXT INDIA</span>
-              <span
-                className="block text-2xl sm:text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text mt-2"
-                style={{
-                  backgroundImage: 'linear-gradient(135deg, #dc2626 0%, #ea580c 50%, #d97706 100%)',
-                }}
-              >
-                RRMI website launch
+            {/* Live Campaign Pill */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-50 border border-red-200 text-red-700 shadow-xs">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
               </span>
-            </h1>
-          </div>
-
-          {/* Voice counter card */}
-          <div className="rounded-2xl p-5 space-y-4 bg-gray-50/80 border border-gray-200 shadow-sm">
-            <div className="flex items-baseline gap-2">
-              <span className="font-black font-mono tabular-nums text-gray-900" style={{ fontSize: '3rem', lineHeight: 1 }}>
-                {voiceCount.toLocaleString('en-IN')}
-              </span>
-              <span className="text-2xl text-gray-400 font-bold">/</span>
-              <span className="text-xl font-black font-mono text-gray-500">{targetCount.toLocaleString('en-IN')}</span>
-              <span className="text-sm font-semibold text-gray-500 ml-1">Voices</span>
+              RESERVATION REFORM MOVEMENT INDIA
             </div>
 
-            <div className="space-y-1.5">
-              <div className="h-3 rounded-full overflow-hidden bg-gray-200/80 shadow-inner">
+            {/* Main Headline */}
+            <div className="space-y-2">
+              <div className="text-xs font-mono font-bold tracking-[0.25em] text-red-600 uppercase">
+                THE NATIONWIDE LAUNCH CAMPAIGN
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-gray-900">
+                THE NEXT INDIA <br />
+                <span className="text-red-600">RRMI website launch</span>
+              </h1>
+            </div>
+
+            {/* Subheading */}
+            <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-2xl">
+              Uniting <strong className="text-gray-900 font-bold">2,026 verified citizens</strong> across every state and union territory. 
+              The moment the 2,026th voice joins, the completed India map illuminates and the full constitutional manifesto goes live nationwide.
+            </p>
+
+            {/* Voice Progress Block */}
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xs max-w-xl">
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <span className="text-3xl sm:text-4xl font-mono font-black text-gray-900">
+                    {voiceCount.toLocaleString('en-IN')}
+                  </span>
+                  <span className="text-gray-400 text-lg font-mono"> / {targetCount.toLocaleString('en-IN')}</span>
+                  <span className="ml-2 text-xs font-bold uppercase tracking-wider text-gray-500">Voices Joined</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-mono font-extrabold text-red-600 bg-red-50 px-2.5 py-1 rounded-lg border border-red-200">
+                    {percentage}% BUFFERED
+                  </span>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden p-0.5 shadow-inner">
                 <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${percentage}%`,
-                    background: 'linear-gradient(90deg, #dc2626 0%, #ea580c 55%, #f59e0b 100%)',
-                    transition: 'width 1.2s cubic-bezier(0.4,0,0.2,1)',
-                  }}
+                  className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-amber-500 via-red-600 to-green-600"
+                  style={{ width: `${percentage}%` }}
                 />
               </div>
-              <div className="flex justify-between text-xs font-semibold">
-                <span className={isUnlocked ? 'text-amber-600 font-bold' : 'text-red-600 font-bold'}>
-                  {isUnlocked
-                    ? '🎉 THE NEXT INDIA IS NOW LIVE!'
-                    : `${remaining.toLocaleString()} more voices needed`}
+
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>
+                  <strong className="text-red-600 font-bold">{remaining.toLocaleString('en-IN')}</strong> more voices needed to unlock
                 </span>
-                <span className="text-gray-500 font-mono">{percentage.toFixed(1)}%</span>
+                <span className="font-semibold text-gray-700">Target: 2,026 Voices</span>
               </div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg p-2.5 flex items-center justify-between font-mono text-xs shadow-xs">
-              <span className="text-red-600 font-bold tracking-widest">
-                {'█'.repeat(Math.min(16, Math.round((percentage / 100) * 16)))}
-                {'░'.repeat(16 - Math.min(16, Math.round((percentage / 100) * 16)))}
-              </span>
-              <span className="text-gray-700 font-bold ml-2 font-sans">{percentage.toFixed(1)}% UNLOCKED</span>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="space-y-3">
-            <button
-              onClick={onOpenModal}
-              className="group relative w-full py-4 px-8 rounded-xl font-black text-lg text-white overflow-hidden flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-500/25 cursor-pointer transition-transform duration-200"
-              style={{ background: 'linear-gradient(135deg, #dc2626 0%, #f97316 100%)' }}
-            >
-              <Flame className="w-5 h-5 animate-pulse flex-shrink-0" />
-              ADD MY VOICE
-              <span
-                className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
-                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)' }}
-              />
-            </button>
-            <div className="flex items-center justify-center gap-4 text-xs text-gray-500 font-medium">
-              <span className="flex items-center gap-1 text-green-700">
-                <ShieldCheck className="w-3.5 h-3.5 text-green-600" /> Verified Participation
-              </span>
-              <span>·</span>
-              <span>States glow brighter as more voices join</span>
-            </div>
-          </div>
-
-          {/* Value props */}
-          <div className="flex flex-wrap gap-2 text-xs text-gray-700">
-            {['Equal Opportunity', 'Social Justice', 'Data-Driven Reform', 'Constitutional Rights'].map(v => (
-              <span key={v} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100/80 border border-gray-200 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
-                {v}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* RIGHT PANEL — Dynamic India Map with Tricolor Glow */}
-        <div className="lg:col-span-7 relative flex flex-col items-center justify-center order-1 lg:order-2">
-
-          <div className="relative w-full max-w-[560px] bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-200">
-
-            {/* Map header */}
-            <div className="flex items-center justify-between mb-3 text-xs">
-              <span className="font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-red-600" />
-                Live Voice Map of India
-              </span>
-              <span className="font-bold flex items-center gap-1 text-gray-700">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                {statesData.filter(s => s.voices > 0).length} states active
-              </span>
-            </div>
-
-            {/* Map + SVG overlay */}
-            <div className="relative w-full overflow-hidden rounded-2xl bg-slate-50 border border-gray-100">
-
-              {/* Base India map — desaturated white/grey */}
-              <img
-                src="/india-map.png"
-                alt="Map of India"
-                className="w-full h-auto select-none block"
-                style={{
-                  filter: 'grayscale(100%) brightness(1.18) contrast(1.1)',
-                  opacity: 0.92,
-                }}
-                draggable="false"
-              />
-
-              {/* Tricolor voice-density glow blobs
-                  North states → Red/Saffron glow
-                  Middle states → Pure White bright glow
-                  South states → Green glow
-                  Each blob: radial gradient from bright core → colored outer ring */}
-              <div className="absolute inset-0 pointer-events-none">
-                {statesData.filter(st => (voiceMap[st.id] || 0) > 0).map(st => {
-                  const px = (st.nodePos.x / SVG_W) * 100;
-                  const py = (st.nodePos.y / SVG_H) * 100;
-                  const zone = getStateZoneColor(st.nodePos.y);
-                  const intensity = getVoiceIntensity(voiceMap[st.id] || 0, maxVoices);
-                  // Glow radius grows from 35px (1 voice) to 95px (max)
-                  const glowSize = 35 + intensity * 70;
-                  // Core white flash then zone color
-                  const coreOpacity = (0.6 + intensity * 0.4).toFixed(2);
-                  const midOpacity  = (0.2 + intensity * 0.55).toFixed(2);
-                  const outerOpacity = (0.04 + intensity * 0.2).toFixed(2);
-
-                  return (
-                    <div
-                      key={`glow-${st.id}`}
-                      className="absolute rounded-full pointer-events-none"
-                      style={{
-                        left: `${px}%`,
-                        top: `${py}%`,
-                        width: `${glowSize}px`,
-                        height: `${glowSize}px`,
-                        transform: 'translate(-50%, -50%)',
-                        // Tricolor radial: white hot core → zone color mid → transparent outer
-                        background: `radial-gradient(circle,
-                          rgba(255,255,255,${coreOpacity}) 0%,
-                          rgba(${zone.glowRgb},${midOpacity}) 45%,
-                          rgba(${zone.glowRgb},${outerOpacity}) 70%,
-                          transparent 100%)`,
-                        filter: `blur(${5 + intensity * 9}px)`,
-                        transition: 'all 1s ease-out',
-                        mixBlendMode: 'screen',
-                      }}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Interactive SVG node beacons — all 36 states always visible */}
-              <svg
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-                className="absolute inset-0 w-full h-full"
-                onMouseLeave={() => setHoveredState(null)}
+            {/* CTA Button */}
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+              <button
+                onClick={onOpenModal}
+                className="btn-rrmi text-base py-4 px-8 rounded-xl font-bold flex items-center justify-center gap-3 shadow-lg hover:shadow-red-200 transition transform active:scale-98 cursor-pointer"
               >
-                {statesData.map((st) => {
-                  const px = (st.nodePos.x / SVG_W) * 100;
-                  const py = (st.nodePos.y / SVG_H) * 100;
-                  const voices = voiceMap[st.id] || 0;
-                  const intensity = getVoiceIntensity(voices, maxVoices);
-                  const isActive = voices > 0;
-                  const isHovered = hoveredState?.id === st.id;
-                  const zone = getStateZoneColor(st.nodePos.y);
-                  const isMiddle = st.nodePos.y > 215 && st.nodePos.y <= 370;
+                <Flame className="w-5 h-5 text-white animate-pulse" />
+                <span>ADD MY VOICE & LIGHT UP NODE</span>
+              </button>
 
-                  // Always show a visible dot — minimum r=2.2, scales up with voices
-                  const dotRadius = isHovered ? 3.5 : (isActive ? 2.2 + intensity * 1.8 : 2.2);
-                  const dotColor = isActive
-                    ? (isMiddle ? '#e5e7eb' : zone.hex)
-                    : (isMiddle ? '#cbd5e1' : '#94a3b8');
-                  const ringColor = isMiddle ? '#9ca3af' : zone.ring;
-                  const dotOpacity = isHovered ? 1 : (isActive ? 0.7 + intensity * 0.3 : 0.5);
+              <a
+                href="#manifesto-reader"
+                className="px-6 py-4 rounded-xl border border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 font-semibold text-sm text-center transition bg-white shadow-xs"
+              >
+                Explore Manifesto Pillars ↓
+              </a>
+            </div>
 
-                  return (
-                    <g
-                      key={st.id}
-                      className="cursor-pointer"
-                      onMouseEnter={() => setHoveredState(st)}
-                      onMouseLeave={() => setHoveredState(null)}
-                      onClick={() => { if (onStateClicked) onStateClicked(st.name); }}
-                    >
-                      {/* Large invisible hit target — r=6 for easy clicking */}
-                      <circle cx={px} cy={py} r={6} fill="transparent" />
+            {/* Micro badges */}
+            <div className="flex flex-wrap items-center gap-6 pt-2 text-xs text-gray-500">
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-green-600" />
+                <span>100% Verified Participation</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>Map lights up at 2,026</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Users className="w-4 h-4 text-blue-600" />
+                <span>36 States & UTs</span>
+              </div>
+            </div>
 
-                      {/* Outer ring — ALL states, grows with voices */}
-                      <circle
-                        cx={px} cy={py}
-                        r={dotRadius + 1.5}
-                        fill="none"
-                        stroke={ringColor}
-                        strokeWidth="0.6"
-                        opacity={isHovered ? 1 : (isActive ? 0.4 + intensity * 0.5 : 0.3)}
-                      />
+          </div>
 
-                      {/* Main beacon dot */}
-                      <circle
-                        cx={px} cy={py}
-                        r={dotRadius}
-                        fill={dotColor}
-                        stroke={isMiddle ? '#64748b' : '#ffffff'}
-                        strokeWidth="0.6"
-                        opacity={dotOpacity}
-                        style={{ transition: 'all 0.6s ease-out' }}
-                      />
+          {/* RIGHT COLUMN: Mesmerizing Rotating Ashoka Chakra Buffering Wheel */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center">
 
-                      {/* White core — always present */}
-                      <circle cx={px} cy={py} r={0.9} fill="#ffffff" opacity="0.9" />
+            <div className="relative flex items-center justify-center w-72 h-72 sm:w-96 sm:h-96">
 
-                      {/* Label when hovered */}
-                      {isHovered && (
-                        <text
-                          x={px}
-                          y={py - (dotRadius + 2.5)}
-                          textAnchor="middle"
-                          fill={isMiddle ? '#374151' : zone.label}
-                          fontSize="2.6"
-                          fontWeight="900"
-                          fontFamily="Inter, sans-serif"
-                          style={{
-                            paintOrder: 'stroke',
-                            stroke: '#ffffff',
-                            strokeWidth: '1.2px',
-                            strokeLinejoin: 'round',
-                            userSelect: 'none',
-                          }}
-                        >
-                          {st.name}
-                        </text>
-                      )}
-                    </g>
-                  );
-                })}
+              {/* Pulsing Ambient Background Glow */}
+              <div
+                className="absolute inset-4 rounded-full pointer-events-none animate-pulse"
+                style={{
+                  background: 'radial-gradient(circle, rgba(29,78,216,0.12) 0%, rgba(220,38,38,0.06) 50%, transparent 70%)',
+                  filter: 'blur(30px)',
+                }}
+              />
+
+              {/* Outer Decorative Track Ring */}
+              <div className="absolute inset-0 rounded-full border border-gray-200/80 shadow-xs" />
+
+              {/* SVG Circular Progress Ring */}
+              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                {/* Background Ring */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r={RADIUS}
+                  fill="none"
+                  stroke="#f1f5f9"
+                  strokeWidth="5"
+                />
+                {/* Dynamic Gradient Progress Stroke */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r={RADIUS}
+                  fill="none"
+                  stroke="url(#chakraGradient)"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray={CIRCUMFERENCE}
+                  strokeDashoffset={strokeDashoffset}
+                  className="transition-all duration-700 ease-out"
+                />
+                <defs>
+                  <linearGradient id="chakraGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f59e0b" />
+                    <stop offset="50%" stopColor="#dc2626" />
+                    <stop offset="100%" stopColor="#16a34a" />
+                  </linearGradient>
+                </defs>
               </svg>
 
-              {/* Hover tooltip */}
-              {hoveredState && (() => {
-                const voices = voiceMap[hoveredState.id] || 0;
-                const intensity = getVoiceIntensity(voices, maxVoices);
-                const zone = getStateZoneColor(hoveredState.nodePos.y);
-                const pct = (intensity * 100).toFixed(0);
-                const isMiddle = hoveredState.nodePos.y > 215 && hoveredState.nodePos.y <= 370;
+              {/* ROTATING ASHOKA CHAKRA (The Buffering Spinner) */}
+              <div
+                className="w-48 h-48 sm:w-64 sm:h-64 relative flex items-center justify-center animate-spin-slow select-none"
+                style={{
+                  animationDuration: isUnlocked ? '1.5s' : '8s',
+                  animationTimingFunction: 'linear',
+                  animationIterationCount: 'infinite',
+                }}
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full text-blue-900 drop-shadow-sm">
+                  {/* Outer Wheel Rim */}
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="2.8" />
+                  <circle cx="50" cy="50" r="43" fill="none" stroke="currentColor" strokeWidth="0.8" strokeDasharray="1.5 1.5" />
+                  
+                  {/* Center Hub */}
+                  <circle cx="50" cy="50" r="9" fill="#ffffff" stroke="currentColor" strokeWidth="2.4" />
+                  <circle cx="50" cy="50" r="3.5" fill="currentColor" />
 
-                return (
-                  <div
-                    className="absolute z-30 pointer-events-none rounded-xl p-3 bg-gray-950/96 text-white border border-gray-700 shadow-xl text-xs"
-                    style={{
-                      left: `${Math.min(Math.max((hoveredState.nodePos.x / SVG_W) * 100 - 12, 2), 62)}%`,
-                      top: `${Math.max((hoveredState.nodePos.y / SVG_H) * 100 - 16, 3)}%`,
-                      minWidth: '165px',
-                    }}
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-bold text-white flex items-center gap-1">
-                        <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: isMiddle ? '#d1d5db' : zone.hex }} />
-                        {hoveredState.name}
-                      </span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded text-white ${zone.badge}`}>
-                        {zone.name}
-                      </span>
-                    </div>
-                    <div className="text-gray-400 text-[10px] mb-1.5">
-                      {hoveredState.capital}
-                    </div>
-                    {/* Density bar */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-[10px]">
-                        <span className="text-gray-400">Voice density</span>
-                        <span className="font-bold" style={{ color: isMiddle ? '#d1d5db' : zone.hex }}>
-                          {voices} voice{voices !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-gray-700 overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${pct}%`,
-                            background: isMiddle
-                              ? 'linear-gradient(90deg, #9ca3af, #ffffff)'
-                              : zone.hex,
-                            transition: 'width 0.5s',
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
+                  {/* 24 Exact Ashoka Chakra Spokes */}
+                  {spokes.map((angle) => (
+                    <line
+                      key={angle}
+                      x1="50"
+                      y1="50"
+                      x2={50 + 39 * Math.cos((angle * Math.PI) / 180)}
+                      y2={50 + 39 * Math.sin((angle * Math.PI) / 180)}
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                  ))}
+                </svg>
+              </div>
+
+              {/* Center Status Floating Badge */}
+              <div className="absolute -bottom-4 bg-white/95 backdrop-blur-xs border border-gray-200 px-4 py-2 rounded-full shadow-md flex items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600" />
+                </span>
+                <span className="text-xs font-mono font-bold text-gray-900">
+                  {isUnlocked ? 'MAP UNLOCKED 100%' : 'BUFFERING THE NEXT INDIA...'}
+                </span>
+              </div>
+
             </div>
 
-            {/* Tricolor Legend */}
-            <div className="mt-3 pt-3 border-t border-gray-100 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-gray-500">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-                No voices yet
-              </span>
-              <span className="flex items-center gap-1.5 font-semibold" style={{ color: '#dc2626' }}>
-                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: '#dc2626', opacity: 0.8 }} />
-                North — Saffron
-              </span>
-              <span className="flex items-center gap-1.5 text-gray-600 font-semibold">
-                <span className="w-2.5 h-2.5 rounded-full border border-gray-400 bg-white flex-shrink-0" />
-                Central — White
-              </span>
-              <span className="flex items-center gap-1.5 text-green-600 font-semibold">
-                <span className="w-2.5 h-2.5 rounded-full bg-green-600 opacity-80 flex-shrink-0" />
-                South — Green
-              </span>
-            </div>
+            {/* Caption below wheel */}
+            <p className="mt-8 text-xs text-gray-500 font-semibold uppercase tracking-wider text-center max-w-xs leading-relaxed">
+              Ashoka Chakra Rotation • Map Lights Up at 2,026 Voices
+            </p>
+
           </div>
-        </div>
-      </div>
 
-      {/* Scroll indicator */}
-      <div className="relative z-10 flex justify-center pb-6">
-        <div
-          className="flex flex-col items-center gap-1 cursor-pointer text-gray-500 hover:text-red-600 transition"
-          onClick={() => document.getElementById('vision')?.scrollIntoView({ behavior: 'smooth' })}
-        >
-          <span className="text-[10px] uppercase tracking-[0.25em] font-semibold">Explore Vision & Manifesto</span>
-          <ChevronDown className="w-4 h-4 animate-bounce" />
         </div>
       </div>
     </section>
