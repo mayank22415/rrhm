@@ -1,0 +1,281 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────
+   SVG PING ANIMATION
+   ───────────────────────────────────────────────────── */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────────────
+   BASE
+   ───────────────────────────────────────────────────── */
+@layer base {
+  body {
+    font-family: 'Inter', 'Outfit', sans-serif;
+    @apply bg-white text-gray-900 antialiased selection:bg-red-600 selection:text-white overflow-x-hidden;
+  }
+}
+
+/* ─────────────────────────────────────────────────────
+   CHAKRA SPIN
+   ───────────────────────────────────────────────────── */
+@keyframes chakra-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-chakra-spin {
+  animation: chakra-spin 20s linear infinite;
+}
+
+.animate-chakra-fast {
+  animation: chakra-spin 2.5s linear infinite;
+}
+
+/* ─────────────────────────────────────────────────────
+   SAFFRON SHIMMER (headline gradient animation)
+   ───────────────────────────────────────────────────── */
+@keyframes shimmer-saffron {
+  0%   { background-position: 0% center; }
+  100% { background-position: 250% center; }
+}
+
+.animate-shimmer-saffron {
+  background-size: 250% auto;
+  animation: shimmer-saffron 4s linear infinite;
+}
+
+/* ─────────────────────────────────────────────────────
+   FADE IN UP
+   ───────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ─────────────────────────────────────────────────────
+   CINEMATIC FADE IN
+   ───────────────────────────────────────────────────── */
+@keyframes fadeInCinematic {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────
+   BLOOM GLOW (map illumination burst)
+   ───────────────────────────────────────────────────── */
+@keyframes bloomGlow {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0.9; transform: scale(1); }
+}
+
+/* ─────────────────────────────────────────────────────
+   CHAKRA GLOW PULSE (hero map overlay)
+   ───────────────────────────────────────────────────── */
+@keyframes pulse-chakra-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.8; transform: scale(1.12); }
+}
+
+@keyframes pulse-bloom {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────
+   FLOAT
+   ───────────────────────────────────────────────────── */
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────
+   RIPPLE / MAP NODE PULSE
+   ───────────────────────────────────────────────────── */
+@keyframes ripple {
+  0%   { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.map-node-pulse {
+  animation: ripple 2s ease-out infinite;
+  transform-origin: center;
+}
+
+/* ─────────────────────────────────────────────────────
+   BUTTONS
+   ───────────────────────────────────────────────────── */
+.btn-rrmi {
+  background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);
+  color: #ffffff;
+  font-weight: 800;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+}
+
+.btn-rrmi:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+}
+
+.btn-rrmi:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: #374151;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.btn-outline:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+/* ─────────────────────────────────────────────────────
+   CARD / PANELS (light clean)
+   ───────────────────────────────────────────────────── */
+.card-panel {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.card-panel:hover {
+  border-color: #fca5a5;
+  box-shadow: 0 8px 30px rgba(220, 38, 38, 0.08);
+}
+
+.section-alt {
+  background: #f9fafb;
+}
+
+/* ─────────────────────────────────────────────────────
+   NAV LINK
+   ───────────────────────────────────────────────────── */
+.nav-link-active {
+  color: #dc2626;
+  position: relative;
+}
+
+.nav-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #dc2626;
+  border-radius: 2px;
+}
+
+/* ─────────────────────────────────────────────────────
+   MAP TOOLTIP
+   ───────────────────────────────────────────────────── */
+.map-tooltip {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 180px;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ─────────────────────────────────────────────────────
+   MANIFESTO LOCKED
+   ───────────────────────────────────────────────────── */
+.manifesto-locked {
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────
+   PROGRESS RING (Chakra wheel)
+   ───────────────────────────────────────────────────── */
+.progress-ring-track {
+  stroke: #fee2e2;
+  fill: none;
+}
+
+.progress-ring-fill {
+  stroke: #dc2626;
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─────────────────────────────────────────────────────
+   INDIA STATE (SVG overlay)
+   ───────────────────────────────────────────────────── */
+.india-state {
+  transition: fill 0.5s ease, fill-opacity 0.5s ease;
+  cursor: pointer;
+}
+
+/* ─────────────────────────────────────────────────────
+   CUSTOM SCROLLBAR — light
+   ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #dc2626; }
+
+/* ─────────────────────────────────────────────────────
+   PRINT STYLES
+   ───────────────────────────────────────────────────── */
+@media print {
+  body { background: white !important; color: black !important; }
+  .no-print { display: none !important; }
+}
+
+/* ─────────────────────────────────────────────────────
+   RED SHIMMER GRADIENT (legacy util)
+   ───────────────────────────────────────────────────── */
+@keyframes shimmer-red {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.text-shimmer-red {
+  background: linear-gradient(90deg, #b91c1c 0%, #dc2626 40%, #ef4444 60%, #dc2626 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer-red 3s linear infinite;
+}
