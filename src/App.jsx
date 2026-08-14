@@ -162,9 +162,12 @@ export default function App() {
     }
   }, [voiceCount, phase]);
 
+  const [mapBloomTrigger, setMapBloomTrigger] = useState(null);
+
   // Self Voice submission
   const handleVoiceSubmitted = (newVoice) => {
     setIsAddModalOpen(false);
+    setMapBloomTrigger({ state: newVoice.state, name: newVoice.name, timestamp: Date.now() });
     ingestNewVoice({ ...newVoice, voiceCount: voiceCount + 1 }, true);
   };
 
@@ -217,6 +220,7 @@ export default function App() {
             statesData={statesData}
             onStateClicked={(stName) => setSelectedState(stName)}
             onTriggerCinematic={() => setPhase(PHASE.CINEMATIC)}
+            mapBloomTrigger={mapBloomTrigger}
           />
 
           {/* Vision Section */}

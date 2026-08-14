@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
 import { Flame, ShieldCheck, Sparkles, Users, Lock, Unlock } from 'lucide-react';
 import { INDIA_VIEWBOX } from '../data/indiaStatesData';
 
@@ -70,9 +71,30 @@ export default function LandingHero({
   statesData = [],
   onStateClicked,
   onTriggerCinematic,
+  mapBloomTrigger,
 }) {
   const [hoveredState, setHoveredState] = useState(null);
   const [justClickedState, setJustClickedState] = useState(null);
+  const [isBlooming, setIsBlooming] = useState(false);
+  const [bloomingStateName, setBloomingStateName] = useState(null);
+
+  // Trigger dramatic Tricolor Bloom whenever a citizen submits their voice!
+  useEffect(() => {
+    if (!mapBloomTrigger) return;
+    setIsBlooming(true);
+    setBloomingStateName(mapBloomTrigger.state || 'India');
+
+    // Confetti burst on voice submission
+    const colors = ['#f59e0b', '#dc2626', '#ffffff', '#16a34a', '#3b82f6'];
+    confetti({ particleCount: 110, spread: 360, startVelocity: 35, origin: { x: 0.7, y: 0.5 }, colors });
+
+    const timer = setTimeout(() => {
+      setIsBlooming(false);
+      setBloomingStateName(null);
+    }, 4500);
+
+    return () => clearTimeout(timer);
+  }, [mapBloomTrigger]);
 
   const percentage = Math.min(100, Math.round((voiceCount / targetCount) * 100));
   const remaining = Math.max(0, targetCount - voiceCount);
@@ -241,20 +263,28 @@ export default function LandingHero({
                 <img
                   src="/india-map.png"
                   alt="India Map"
-                  className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-all duration-1000"
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-all duration-700"
                   style={{
-                    filter: isComplete
-                      ? 'brightness(1.18) saturate(1.8) drop-shadow(0 0 20px rgba(245,158,11,0.4))'
+                    filter: (isComplete || isBlooming)
+                      ? 'brightness(1.28) saturate(2.4) drop-shadow(0 0 35px rgba(245,158,11,0.7))'
                       : 'brightness(0.96) saturate(1.0)',
                   }}
                 />
 
-                {/* FULL MAP TRICOLOR BLOOM (When 2,026 is reached) */}
-                {isComplete && (
-                  <div className="absolute inset-0 pointer-events-none mix-blend-overlay transition-opacity duration-1000 opacity-80">
-                    <div className="absolute top-0 inset-x-0 h-1/3 bg-gradient-to-b from-orange-500/40 via-amber-400/20 to-transparent" />
-                    <div className="absolute top-1/3 inset-x-0 h-1/3 bg-gradient-to-b from-white/30 via-white/10 to-transparent" />
-                    <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-green-600/40 via-emerald-400/20 to-transparent" />
+                {/* FULL MAP TRICOLOR BLOOM (Triggered on Submit & 2026 Milestone) */}
+                {(isComplete || isBlooming) && (
+                  <div className="absolute inset-0 pointer-events-none transition-opacity duration-700 opacity-90">
+                    <div className="absolute top-0 inset-x-0 h-1/3 bg-gradient-to-b from-orange-500/50 via-amber-400/30 to-transparent" />
+                    <div className="absolute top-1/3 inset-x-0 h-1/3 bg-gradient-to-b from-white/40 via-white/20 to-transparent" />
+                    <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-green-600/50 via-emerald-400/30 to-transparent" />
+                  </div>
+                )}
+
+                {/* Blooming State Floating Live Celebration Pill */}
+                {isBlooming && bloomingStateName && (
+                  <div className="absolute top-4 inset-x-0 mx-auto w-fit z-50 px-4 py-2 rounded-full bg-gray-900/90 border border-amber-400/60 text-white text-xs font-black shadow-2xl flex items-center gap-2 animate-bounce">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
+                    <span>🇮🇳 {bloomingStateName.toUpperCase()} NODE ACTIVATED & LIGHTING UP INDIA!</span>
                   </div>
                 )}
 
