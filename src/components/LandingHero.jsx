@@ -265,26 +265,31 @@ export default function LandingHero({
                   alt="India Map"
                   className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-all duration-700"
                   style={{
-                    filter: (isComplete || isBlooming)
-                      ? 'brightness(1.28) saturate(2.4) drop-shadow(0 0 35px rgba(245,158,11,0.7))'
-                      : 'brightness(0.96) saturate(1.0)',
+                    filter: isBlooming
+                      ? 'brightness(1.15) contrast(1.1) drop-shadow(0 0 35px rgba(245,158,11,0.7))'
+                      : isComplete
+                      ? 'brightness(1.05) drop-shadow(0 0 25px rgba(59,130,246,0.5))'
+                      : 'brightness(1.0) contrast(1.05)',
                   }}
                 />
 
-                {/* FULL MAP TRICOLOR BLOOM (Triggered on Submit & 2026 Milestone) */}
-                {(isComplete || isBlooming) && (
-                  <div className="absolute inset-0 pointer-events-none transition-opacity duration-700 opacity-90">
-                    <div className="absolute top-0 inset-x-0 h-1/3 bg-gradient-to-b from-orange-500/50 via-amber-400/30 to-transparent" />
-                    <div className="absolute top-1/3 inset-x-0 h-1/3 bg-gradient-to-b from-white/40 via-white/20 to-transparent" />
-                    <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-green-600/50 via-emerald-400/30 to-transparent" />
+                {/* FOR EVERY SUBMISSION: DIRECTLY TURNS TO INDIA FLAG COLOR WITH CHAKRA */}
+                {isBlooming && (
+                  <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-95">
+                    {/* Top 33%: Saffron / Kesari */}
+                    <div className="absolute top-0 inset-x-0 h-[34%] bg-gradient-to-b from-[#FF9933]/70 via-[#FF9933]/50 to-[#FF9933]/30" />
+                    {/* Middle 33%: Pure White Band */}
+                    <div className="absolute top-[34%] inset-x-0 h-[33%] bg-gradient-to-b from-white/60 via-white/40 to-white/60" />
+                    {/* Bottom 33%: India Green */}
+                    <div className="absolute bottom-0 inset-x-0 h-[33%] bg-gradient-to-t from-[#138808]/70 via-[#138808]/50 to-[#138808]/30" />
                   </div>
                 )}
 
                 {/* Blooming State Floating Live Celebration Pill */}
                 {isBlooming && bloomingStateName && (
-                  <div className="absolute top-4 inset-x-0 mx-auto w-fit z-50 px-4 py-2 rounded-full bg-gray-900/90 border border-amber-400/60 text-white text-xs font-black shadow-2xl flex items-center gap-2 animate-bounce">
+                  <div className="absolute top-3 inset-x-0 mx-auto w-fit z-50 px-4 py-2 rounded-full bg-gray-900/95 border border-amber-400 text-white text-xs font-black shadow-2xl flex items-center gap-2 animate-bounce">
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
-                    <span>🇮🇳 {bloomingStateName.toUpperCase()} NODE ACTIVATED & LIGHTING UP INDIA!</span>
+                    <span>🇮🇳 {bloomingStateName.toUpperCase()} JOINED — INDIA LIGHTS UP IN TRICOLOR!</span>
                   </div>
                 )}
 
@@ -301,7 +306,7 @@ export default function LandingHero({
                       const isHovered = hoveredState === st.id;
                       const wasJustClicked = justClickedState === st.id;
                       const intensity = Math.min(1, Math.log((st.voices || 0) + 1) / Math.log(maxVoices + 1));
-                      const glowRadius = isComplete ? 32 : wasJustClicked ? 45 : isHovered ? 30 : 12 + intensity * 16;
+                      const glowRadius = isBlooming ? 35 : isComplete ? 28 : wasJustClicked ? 45 : isHovered ? 30 : 10 + intensity * 14;
 
                       return (
                         <circle
@@ -309,7 +314,7 @@ export default function LandingHero({
                           cx={st.nodePos.x}
                           cy={st.nodePos.y}
                           r={glowRadius}
-                          fill={`rgba(${zone.rgb}, ${isComplete ? 0.35 : wasJustClicked ? 0.6 : isHovered ? 0.4 : 0.15})`}
+                          fill={`rgba(${zone.rgb}, ${isBlooming ? 0.45 : isComplete ? 0.3 : wasJustClicked ? 0.6 : isHovered ? 0.4 : 0.12})`}
                           style={{
                             filter: 'blur(6px)',
                             transition: 'all 0.3s ease-out',
@@ -323,7 +328,7 @@ export default function LandingHero({
                   <g className="map-labels">
                     {statesData.map((st) => {
                       const isHovered = hoveredState === st.id;
-                      const isLarge = st.voices >= 60 || isHovered;
+                      const isLarge = st.voices >= 5 || isHovered;
                       if (!isLarge && st.nodePos.y < 100) return null;
 
                       return (
@@ -353,8 +358,8 @@ export default function LandingHero({
                       const isHovered = hoveredState === st.id;
                       const wasJustClicked = justClickedState === st.id;
                       const intensity = Math.min(1, Math.log((st.voices || 0) + 1) / Math.log(maxVoices + 1));
-                      const outerRadius = isComplete ? 7.5 : wasJustClicked ? 12 : isHovered ? 9 : 3.5 + intensity * 4.5;
-                      const coreRadius = isComplete ? 3.5 : isHovered ? 3.8 : 2.2;
+                      const outerRadius = isBlooming ? 8 : isComplete ? 6.5 : wasJustClicked ? 12 : isHovered ? 9 : 3.5 + intensity * 4.5;
+                      const coreRadius = isHovered ? 3.8 : 2.2;
 
                       return (
                         <g
@@ -364,7 +369,7 @@ export default function LandingHero({
                           onMouseLeave={() => setHoveredState(null)}
                           onClick={() => handleStateClick(st)}
                         >
-                          {/* Invisible Large Hit Target */}
+                          {/* Hit Target */}
                           <circle
                             cx={st.nodePos.x}
                             cy={st.nodePos.y}
@@ -378,7 +383,7 @@ export default function LandingHero({
                             cy={st.nodePos.y}
                             r={outerRadius}
                             fill={zone.hex}
-                            fillOpacity={isComplete ? 0.75 : wasJustClicked ? 0.9 : isHovered ? 0.8 : 0.45}
+                            fillOpacity={isBlooming ? 0.85 : isComplete ? 0.75 : wasJustClicked ? 0.9 : isHovered ? 0.8 : 0.45}
                             stroke={zone.ring}
                             strokeWidth={isHovered ? '1.8' : '1.2'}
                             className="transition-all duration-300"
@@ -395,7 +400,7 @@ export default function LandingHero({
                           />
 
                           {/* Animated Ripple for active states */}
-                          {(wasJustClicked || isHovered || isComplete) && (
+                          {(wasJustClicked || isHovered || isBlooming) && (
                             <circle
                               cx={st.nodePos.x}
                               cy={st.nodePos.y}
@@ -412,59 +417,92 @@ export default function LandingHero({
                   </g>
 
                   {/* ═══════════════════════════════════════════════════════════════════
-                      2,026 MILESTONE REACHED: SINGLE CLICK TO UNLOCK BUTTON
+                      ASHOKA CHAKRA IN CENTER:
+                      - Rotates on submission (isBlooming) with tricolor flag colors
+                      - On 2,026 completion (isComplete): Shows Chakra with "CLICK TO UNLOCK WEBSITE" under it
                      ═══════════════════════════════════════════════════════════════════ */}
-                  {isComplete && (
+                  {(isBlooming || isComplete) && (
                     <g
-                      className="cursor-pointer group/unlock transition-all duration-500"
+                      className="cursor-pointer group/chakra transition-all duration-500"
                       onClick={onTriggerCinematic}
                     >
-                      {/* Pulsing Energy Aura */}
+                      {/* Ambient Energy Glow Halo */}
                       <circle
-                        cx="245"
-                        cy="310"
-                        r="55"
-                        fill="rgba(234, 88, 12, 0.25)"
-                        style={{ filter: 'blur(15px)' }}
+                        cx="270"
+                        cy="300"
+                        r={isComplete ? "55" : "42"}
+                        fill={isBlooming ? "rgba(245, 158, 11, 0.35)" : "rgba(59, 130, 246, 0.25)"}
+                        style={{ filter: 'blur(14px)' }}
                         className="animate-pulse"
                       />
 
-                      {/* Expanding Ripple Ring */}
-                      <circle
-                        cx="245"
-                        cy="310"
-                        r="45"
-                        fill="none"
-                        stroke="#f59e0b"
-                        strokeWidth="2"
-                        className="animate-ping opacity-75"
-                      />
-
-                      {/* Interactive Click to Unlock Badge */}
-                      <g className="cursor-pointer select-none">
-                        <rect
-                          x="135"
-                          y="295"
-                          width="220"
-                          height="32"
-                          rx="16"
-                          fill="#1e3a8a"
-                          stroke="#fbbf24"
-                          strokeWidth="1.5"
-                          className="group-hover/unlock:fill-red-600 transition shadow-xl"
-                        />
-                        <text
-                          x="245"
-                          y="316"
-                          textAnchor="middle"
-                          fontSize="11"
-                          fontWeight="900"
+                      {/* Rotating Ashoka Chakra */}
+                      <g
+                        style={{
+                          transformOrigin: '270px 300px',
+                          animation: 'spinSmooth 8s linear infinite',
+                        }}
+                      >
+                        {/* Outer Rim */}
+                        <circle
+                          cx="270"
+                          cy="300"
+                          r="32"
                           fill="#ffffff"
-                          letterSpacing="0.6"
-                        >
-                          ☸ CLICK TO UNLOCK 2026
-                        </text>
+                          stroke="#1e3a8a"
+                          strokeWidth="2.8"
+                          className="shadow-xl"
+                        />
+                        {/* Hub */}
+                        <circle
+                          cx="270"
+                          cy="300"
+                          r="6.5"
+                          fill="#1e3a8a"
+                        />
+
+                        {/* 24 Spokes */}
+                        {spokes.map((angle) => (
+                          <line
+                            key={`chakra-spoke-${angle}`}
+                            x1="270"
+                            y1="300"
+                            x2={270 + 26 * Math.cos((angle * Math.PI) / 180)}
+                            y2={300 + 26 * Math.sin((angle * Math.PI) / 180)}
+                            stroke="#1e3a8a"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                          />
+                        ))}
                       </g>
+
+                      {/* ON LAST SUBMISSION (2026): "CLICK TO UNLOCK WEBSITE" BUTTON UNDER CHAKRA */}
+                      {isComplete && (
+                        <g className="cursor-pointer select-none">
+                          <rect
+                            x="150"
+                            y="348"
+                            width="240"
+                            height="34"
+                            rx="17"
+                            fill="#dc2626"
+                            stroke="#fbbf24"
+                            strokeWidth="2"
+                            className="group-hover/chakra:fill-red-700 transition shadow-2xl"
+                          />
+                          <text
+                            x="270"
+                            y="370"
+                            textAnchor="middle"
+                            fontSize="11"
+                            fontWeight="900"
+                            fill="#ffffff"
+                            letterSpacing="0.8"
+                          >
+                            ☸ CLICK TO UNLOCK WEBSITE
+                          </text>
+                        </g>
+                      )}
                     </g>
                   )}
                 </svg>
