@@ -392,87 +392,61 @@ export default function LandingHero({
                   </g>
 
                   {/* ═══════════════════════════════════════════════════════════════════
-                      CENTER ASHOKA CHAKRA (Appears in Center of India at x:270, y:300)
-                      Clicking this launches the full Ashoka Chakra Cinematic Unlock!
+                      2,026 MILESTONE REACHED: SINGLE CLICK TO UNLOCK BUTTON
                      ═══════════════════════════════════════════════════════════════════ */}
-                  <g
-                    className="cursor-pointer group/chakra transition-all duration-500"
-                    onClick={onTriggerCinematic}
-                  >
-                    {/* Pulsing Energy Glow behind Chakra */}
-                    <circle
-                      cx="270"
-                      cy="300"
-                      r={isComplete ? "48" : "36"}
-                      fill="rgba(59, 130, 246, 0.18)"
-                      style={{ filter: 'blur(12px)' }}
-                      className="animate-pulse"
-                    />
-
-                    {/* Rotating Chakra Body */}
+                  {isComplete && (
                     <g
-                      style={{
-                        transformOrigin: '270px 300px',
-                        animation: isComplete ? 'spinSmooth 4s linear infinite' : 'spinSmooth 10s linear infinite',
-                      }}
+                      className="cursor-pointer group/unlock transition-all duration-500"
+                      onClick={onTriggerCinematic}
                     >
-                      {/* Outer Rim */}
+                      {/* Pulsing Energy Aura */}
                       <circle
-                        cx="270"
-                        cy="300"
-                        r={isComplete ? "34" : "26"}
-                        fill="#ffffff"
-                        stroke="#1e3a8a"
-                        strokeWidth={isComplete ? "2.6" : "2"}
-                        className="shadow-lg"
-                      />
-                      {/* Inner Hub */}
-                      <circle
-                        cx="270"
-                        cy="300"
-                        r={isComplete ? "6.5" : "5"}
-                        fill="#1e3a8a"
+                        cx="245"
+                        cy="310"
+                        r="55"
+                        fill="rgba(234, 88, 12, 0.25)"
+                        style={{ filter: 'blur(15px)' }}
+                        className="animate-pulse"
                       />
 
-                      {/* 24 Spokes */}
-                      {spokes.map((angle) => (
-                        <line
-                          key={`center-spoke-${angle}`}
-                          x1="270"
-                          y1="300"
-                          x2={270 + (isComplete ? 28 : 21) * Math.cos((angle * Math.PI) / 180)}
-                          y2={300 + (isComplete ? 28 : 21) * Math.sin((angle * Math.PI) / 180)}
-                          stroke="#1e3a8a"
-                          strokeWidth={isComplete ? "1.4" : "1.1"}
-                          strokeLinecap="round"
+                      {/* Expanding Ripple Ring */}
+                      <circle
+                        cx="245"
+                        cy="310"
+                        r="45"
+                        fill="none"
+                        stroke="#f59e0b"
+                        strokeWidth="2"
+                        className="animate-ping opacity-75"
+                      />
+
+                      {/* Interactive Click to Unlock Badge */}
+                      <g className="cursor-pointer select-none">
+                        <rect
+                          x="135"
+                          y="295"
+                          width="220"
+                          height="32"
+                          rx="16"
+                          fill="#1e3a8a"
+                          stroke="#fbbf24"
+                          strokeWidth="1.5"
+                          className="group-hover/unlock:fill-red-600 transition shadow-xl"
                         />
-                      ))}
+                        <text
+                          x="245"
+                          y="316"
+                          textAnchor="middle"
+                          fontSize="11"
+                          fontWeight="900"
+                          fill="#ffffff"
+                          letterSpacing="0.6"
+                        >
+                          ☸ CLICK TO UNLOCK 2026
+                        </text>
+                      </g>
                     </g>
-
-                    {/* Interactive Click Banner over Chakra */}
-                    <g className="cursor-pointer select-none">
-                      <rect
-                        x="170"
-                        y="342"
-                        width="200"
-                        height="24"
-                        rx="12"
-                        fill="#1e3a8a"
-                        className="group-hover/chakra:fill-red-600 transition shadow-lg"
-                      />
-                      <text
-                        x="270"
-                        y="358"
-                        textAnchor="middle"
-                        fontSize="9.5"
-                        fontWeight="900"
-                        fill="#ffffff"
-                        letterSpacing="0.5"
-                      >
-                        {isComplete ? '☸ CLICK TO UNLOCK 2026' : '☸ CLICK TO UNLOCK'}
-                      </text>
-                    </g>
-                  </g>
+                  )}
                 </svg>
 
                 {/* State Hover Card Float */}
