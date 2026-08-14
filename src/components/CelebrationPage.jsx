@@ -81,7 +81,7 @@ export default function CelebrationPage({ voiceCount, statesData = [], onEnterWe
           </h2>
 
           <p className="text-gray-400 text-lg sm:text-xl max-w-xl mx-auto leading-relaxed pt-2">
-            The Next India is now public. A manifesto built by a movement, opened by the people.
+            The Next India is now public. A website built by a movement, opened by the people.
           </p>
         </div>
 
