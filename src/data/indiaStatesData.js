@@ -1,7 +1,7 @@
 // High-Fidelity Geographic India SVG Map Data
 // ViewBox: 0 0 620 700
 // All 28 States + 8 Union Territories
-// Initial total seed count: 103 voices
+// Initial total seed count: 1857 voices
 
 export const INDIA_VIEWBOX = "0 0 620 700";
 
@@ -404,6 +404,6 @@ export const INDIA_STATES = [
   }
 ];
 
-// Initial total voice count = exactly 103
-export const TOTAL_INITIAL_VOICES = INDIA_STATES.reduce((acc, st) => acc + st.voices, 0);
+// Initial total voice count = exactly 103 (from states) + 1754 seed offset = 1857
+export const TOTAL_INITIAL_VOICES = INDIA_STATES.reduce((acc, st) => acc + st.voices, 0) + 1754;
 export const TARGET_VOICES = 2026;
